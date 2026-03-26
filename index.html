@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python do Zero</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --card: #1a1e2a;
+    --border: #252a38;
+    --py-blue: #3a7bd5;
+    --py-yellow: #ffd43b;
+    --green: #3ecf8e;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --accent: #7c6aff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(60,120,213,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(60,120,213,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 1;
+    padding: 48px 24px 32px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .py-logo {
+    width: 52px; height: 52px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--py-blue), var(--py-yellow));
+    border-radius: 14px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 0 32px rgba(58,123,213,.4);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 32px rgba(58,123,213,.4); }
+    50% { box-shadow: 0 0 48px rgba(255,212,59,.4); }
+  }
+
+  header h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--py-blue), var(--py-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin-top: 8px;
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--py-blue), var(--py-yellow));
+    transition: width .4s ease;
+    z-index: 999;
+  }
+
+  /* LAYOUT */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  /* MODULES NAV */
+  .modules-nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .mod-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .mod-btn:hover { border-color: var(--py-blue); color: var(--text); }
+  .mod-btn.active {
+    background: var(--py-blue);
+    border-color: var(--py-blue);
+    color: #fff;
+    font-weight: 700;
+  }
+  .mod-btn.done {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  /* SECTION */
+  .section { display: none; animation: fadeIn .4s ease; }
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .section-title span { color: var(--py-yellow); }
+
+  .section-sub {
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-size: .95rem;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card p { color: var(--muted); line-height: 1.7; font-size: .95rem; }
+  .card ul { list-style: none; }
+  .card ul li {
+    padding: 6px 0;
+    color: var(--muted);
+    font-size: .95rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .card ul li::before { content: '\u25b8'; color: var(--py-yellow); flex-shrink: 0; margin-top: 1px; }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #111318;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .75rem;
+    color: var(--muted);
+  }
+
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: .75rem;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    transition: all .2s;
+  }
+  .copy-btn:hover { border-color: var(--py-yellow); color: var(--py-yellow); }
+
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .88rem;
+    line-height: 1.7;
+  }
+
+  /* SYNTAX COLORS */
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: var(--py-yellow); }
+  .num { color: #f78c6c; }
+  .cm { color: #546e7a; font-style: italic; }
+  .op { color: var(--green); }
+  .builtin { color: #89ddff; }
+
+  /* QUIZ */
+  .quiz-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .quiz-q {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+
+  .quiz-opt {
+    padding: 12px 18px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: .92rem;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: left;
+  }
+
+  .quiz-opt:hover:not(:disabled) { border-color: var(--py-blue); background: rgba(58,123,213,.1); }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(62,207,142,.12); color: var(--green); }
+  .quiz-opt.wrong { border-color: var(--red); background: rgba(248,113,113,.1); color: var(--red); }
+  .quiz-opt:disabled { cursor: default; }
+
+  .quiz-feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: .9rem;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(62,207,142,.1); color: var(--green); border: 1px solid rgba(62,207,142,.3); }
+  .quiz-feedback.err { background: rgba(248,113,113,.1); color: var(--red); border: 1px solid rgba(248,113,113,.3); }
+
+  /* NAV BUTTONS */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--py-blue), #5a9cf5);
+    color: #fff;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(58,123,213,.3); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover { border-color: var(--py-blue); color: var(--text); }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 700;
+  }
+  .badge-blue { background: rgba(58,123,213,.15); color: var(--py-blue); border: 1px solid rgba(58,123,213,.25); }
+  .badge-yellow { background: rgba(255,212,59,.1); color: var(--py-yellow); border: 1px solid rgba(255,212,59,.2); }
+  .badge-green { background: rgba(62,207,142,.1); color: var(--green); border: 1px solid rgba(62,207,142,.2); }
+
+  /* TIPS */
+  .tip {
+    border-left: 3px solid var(--py-yellow);
+    padding: 12px 16px;
+    background: rgba(255,212,59,.05);
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: .9rem;
+    color: var(--muted);
+  }
+  .tip strong { color: var(--py-yellow); }
+
+  /* GRID 2 */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+
+  /* COMPLETE BANNER */
+  .complete-banner {
+    text-align: center;
+    padding: 48px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin-top: 20px;
+  }
+  .complete-banner .emoji { font-size: 4rem; margin-bottom: 16px; }
+  .complete-banner h2 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+  .complete-banner p { color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { padding: 10px 14px; border: 1px solid var(--border); text-align: left; }
+  th { background: var(--surface); color: var(--py-yellow); font-weight: 700; }
+  td { color: var(--muted); }
+  td:first-child { color: var(--text); font-family: 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<header>
+  <div class="logo-row">
+    <div class="py-logo">Py</div>
+    <h1>Python do Zero</h1>
+  </div>
+  <p>Guia completo e interativo para iniciantes \ud83d\ude80</p>
+</header>
+
+<div class="container">
+
+  <!-- MODULES NAV -->
+  <div class="modules-nav" id="modsNav">
+    <button class="mod-btn active" onclick="goTo(0)">1. Intro</button>
+    <button class="mod-btn" onclick="goTo(1)">2. Vari\u00e1veis</button>
+    <button class="mod-btn" onclick="goTo(2)">3. Strings</button>
+    <button class="mod-btn" onclick="goTo(3)">4. Condicionais</button>
+    <button class="mod-btn" onclick="goTo(4)">5. Loops</button>
+    <button class="mod-btn" onclick="goTo(5)">6. Fun\u00e7\u00f5es</button>
+    <button class="mod-btn" onclick="goTo(6)">7. Listas</button>
+    <button class="mod-btn" onclick="goTo(7)">8. Dicion\u00e1rios</button>
+    <button class="mod-btn" onclick="goTo(8)">9. Quiz Final</button>
+  </div>
+
+  <!-- ===== SE\u00c7\u00c3O 0: INTRO ===== -->
+  <div class="section active" id="sec0">
+    <div class="section-title">Bem-vindo ao <span>Python!</span></div>
+    <p class="section-sub">O que \u00e9 Python e por que aprender?</p>
+
+    <div class="card">
+      <h3>\ud83d\udc0d O que \u00e9 Python?</h3>
+      <p>Python \u00e9 uma linguagem de programa\u00e7\u00e3o criada em 1991 por Guido van Rossum. \u00c9 conhecida pela <strong>sintaxe simples e leg\u00edvel</strong>, parecida com pseudoc\u00f3digo em ingl\u00eas. \u00c9 uma das linguagens mais populares do mundo.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>\u2705 Para que serve?</h3>
+        <ul>
+          <li>Desenvolvimento Web (FastAPI, Django)</li>
+          <li>Data Science e Machine Learning</li>
+          <li>Automa\u00e7\u00e3o de tarefas</li>
+          <li>Scripts e ferramentas</li>
+          <li>APIs e backends</li>
+          <li>Bots e scra
